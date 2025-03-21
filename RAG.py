@@ -1,4 +1,5 @@
 import os
+import warnings
 from dotenv import load_dotenv
 from langchain import hub
 from langchain_community.chat_models import ChatDeepInfra
@@ -8,7 +9,9 @@ from langchain_core.documents import Document
 from langgraph.graph import START, StateGraph
 from typing_extensions import List, TypedDict
 
+warnings.filterwarnings("ignore")
 load_dotenv()
+
 
 llm = ChatDeepInfra(model="meta-llama/Llama-3.3-70B-Instruct")
 embeddings = DeepInfraEmbeddings(model_id="BAAI/bge-m3")
@@ -16,7 +19,7 @@ vector_store = InMemoryVectorStore(embeddings)
 
 
 document_1 = Document(
-    page_content="這間早餐店的店名叫做家鄉早餐店",
+    page_content="這間早餐店的店名叫做家家早餐店",
 )
 
 documents = [
@@ -47,5 +50,5 @@ graph_builder = StateGraph(State).add_sequence([retrieve, generate])
 graph_builder.add_edge(START, "retrieve")
 graph = graph_builder.compile()
 
-response = graph.invoke({"question": "早餐店店名叫什麼?"})
+response = graph.invoke({"question": "這間早餐店店名叫什麼?，請只回答店名"})
 print(response["answer"])
