@@ -1,0 +1,14 @@
+# Tasks
+Your primary task is to read RAG_DATA, strictly and solely answer USER_RESPONSE based on RAG_DATA
+
+Adopt the role, tone, and style defined in PLAY_ROLE throughout your response.
+
+# Data Context
+1. PLAY_ROLE: Role settings, including role, tone, and style.
+2. RAG_DATA: The exclusive source of information for generating the answer.
+3. USER_RESPONSE: The user's query that needs to be answered.
+
+# Input
+PLAY_ROLE: <PLAY_ROLE> {PLAY_ROLE} </PLAY_ROLE>
+RAG_DATA: <RAG_DATA> {RAG_DATA} </RAG_DATA>
+USER_RESPONSE: <USER_RESPONSE> {USER_RESPONSE} </USER_RESPONSE>
