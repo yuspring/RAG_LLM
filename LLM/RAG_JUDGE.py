@@ -4,6 +4,7 @@ import datetime
 import warnings
 import DB_mongo
 import LLM_router
+import prompt.prompt_template as pt
 from dotenv import load_dotenv
 from langchain_core.vectorstores import InMemoryVectorStore
 from langchain_core.documents import Document
@@ -23,22 +24,17 @@ class RAG_Judge_Agent:
     def __init__(self,VENDOR,MODEL,EMBEDDING_MODEL,URL=None):
         warnings.filterwarnings("ignore")
         load_dotenv()
+
+        self.RETRIEVE_NUM=10
         self.llm = LLM_router.chat_model(VENDOR,MODEL)
         self.embeddings = LLM_router.embedding_model(VENDOR,EMBEDDING_MODEL)
         self.vector_store = InMemoryVectorStore(self.embeddings)
         self.vector_store.add_documents(documents=DB_mongo.get_all_items())
 
-        with open("./prompt/prompt-rule-ch.txt", 'r', encoding='utf-8') as file:
-            self.prompt_rag = PromptTemplate.from_template(file.read())
-
-        with open("./prompt/prompt-judge-ch.txt", 'r', encoding='utf-8') as file:
-            self.prompt_judge = PromptTemplate.from_template(file.read())
-
-        with open("./prompt/store-rag-role.txt", 'r', encoding='utf-8') as file:
-            self.rag_play_role = file.read()
-
-        with open("./prompt/store-rag-rules.txt", 'r', encoding='utf-8') as file:
-            self.rag_rules = file.read()
+        self.prompt_rag = PromptTemplate.from_template(pt.PROMPT_RULE_CHINESE)
+        self.prompt_judge = PromptTemplate.from_template(pt.PROMPT_JUDGE_CHINESE)
+        self.rag_play_role = pt.STORE_RAG_ROLE_CHINESE
+        self.rag_rules = pt.STORE_RAG_RULES_CHINESE
 
         self.graph = self._build_graph()
 
@@ -74,7 +70,7 @@ class RAG_Judge_Agent:
         return graph_builder.compile()
     def _rag_retrieve_node(self,state: State):
         print("---RAG Retrieve---")
-        retrieved_docs = self.vector_store.similarity_search(state["question"], k=10)
+        retrieved_docs = self.vector_store.similarity_search(state["question"], k=self.RETRIEVE_NUM)
         return {"rag_data": retrieved_docs}
 
     def _rag_generate_node(self,state: State):

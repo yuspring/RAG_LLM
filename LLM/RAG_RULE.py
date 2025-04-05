@@ -1,9 +1,8 @@
 import warnings
 import DB_mongo
 import LLM_router
+import prompt.prompt_template as pt
 from dotenv import load_dotenv
-from langchain_community.chat_models import ChatDeepInfra
-from langchain_community.embeddings import DeepInfraEmbeddings
 from langchain_core.vectorstores import InMemoryVectorStore
 from langchain_core.documents import Document
 from langgraph.graph import START, StateGraph, END
@@ -19,19 +18,16 @@ class RAG_Agent:
     def __init__(self,VENDOR,MODEL,EMBEDDING_MODEL,URL=None):
         warnings.filterwarnings("ignore")
         load_dotenv()
+
+        self.RETRIEVE_NUM=10
+        self.prompt = PromptTemplate.from_template(pt.PROMPT_RULE_CHINESE)
+        self.rag_play_role = pt.STORE_RAG_ROLE_CHINESE
+        self.rag_rules = pt.STORE_RAG_RULES_CHINESE
+
         self.llm = LLM_router.chat_model(VENDOR,MODEL)
         self.embeddings = LLM_router.embedding_model(VENDOR,EMBEDDING_MODEL)
         self.vector_store = InMemoryVectorStore(self.embeddings)
         self.vector_store.add_documents(documents=DB_mongo.get_all_items())
-        self.retrieve_num = 10
-        with open("./prompt/prompt-rule-ch.txt", 'r', encoding='utf-8') as file:
-            self.prompt = PromptTemplate.from_template(file.read())
-
-        with open("./prompt/store-rag-role.txt", 'r', encoding='utf-8') as file:
-            self.rag_play_role = file.read()
-
-        with open("./prompt/store-rag-rules.txt", 'r', encoding='utf-8') as file:
-            self.rag_rules = file.read()
         
         self.graph = self._build_graph()
     
@@ -47,7 +43,7 @@ class RAG_Agent:
     
     def _retrieve_node(self,state: State):
         print("---RAG Retrieve---")
-        retrieved_docs = self.vector_store.similarity_search(state["question"], k=self.retrieve_num)
+        retrieved_docs = self.vector_store.similarity_search(state["question"], k=self.RETRIEVE_NUM)
         return {"context": retrieved_docs}
 
     def _generate_node(self,state: State):

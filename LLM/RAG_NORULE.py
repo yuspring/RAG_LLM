@@ -1,6 +1,8 @@
+from LLM.DB_mongo import DB_mongo
+from LLM.LLM_router import LLM_router
+from prompt.prompt_template import prompt as pt
+
 import warnings
-import DB_mongo
-import LLM_router
 from dotenv import load_dotenv
 from langchain_core.vectorstores import InMemoryVectorStore
 from langchain_core.documents import Document
@@ -18,17 +20,15 @@ class RAG_Agent:
 
         warnings.filterwarnings("ignore")
         load_dotenv()
+
+        self.RETRIEVE_NUM=10
+        self.prompt = PromptTemplate.from_template(pt.PROMPT_NORULE_CHINESE)
+        self.rag_play_role = pt.STORE_RAG_ROLE_CHINESE
+        
         self.llm = LLM_router.chat_model(VENDOR,MODEL)
         self.embeddings = LLM_router.embedding_model(VENDOR,EMBEDDING_MODEL)
         self.vector_store = InMemoryVectorStore(self.embeddings)
         self.vector_store.add_documents(documents=DB_mongo.get_all_items())
-        self.retrieve_num = 10
-        with open("./prompt/prompt-norule-ch.txt", 'r', encoding='utf-8') as file:
-            self.prompt = PromptTemplate.from_template(file.read())
-
-        with open("./prompt/store-rag-role.txt", 'r', encoding='utf-8') as file:
-            self.rag_play_role = file.read()
-    
         self.graph = self._build_graph()
         
     def _build_graph(self):
@@ -43,7 +43,7 @@ class RAG_Agent:
 
     def _retrieve_node(self,state: State):
         print("---RAG Retrieve---")
-        retrieved_docs = self.vector_store.similarity_search(state["question"], k=self.retrieve_num)
+        retrieved_docs = self.vector_store.similarity_search(state["question"], k=self.RETRIEVE_NUM)
         return {"context": retrieved_docs}
 
     def _generate_node(self,state: State):
@@ -61,9 +61,3 @@ class RAG_Agent:
         response = self.graph.invoke({"question": question})
         return response["answer"]
 
-VENDOR="DEEPINFRA"
-MODEL="meta-llama/Llama-3.3-70B-Instruct"
-EMBEDDING_MODEL="BAAI/bge-m3"
-
-LLM_agent = RAG_Agent(VENDOR,MODEL,EMBEDDING_MODEL)
-print(LLM_agent.query("你好"))

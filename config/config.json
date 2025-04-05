@@ -1,0 +1,8 @@
+{
+    "VENDOR":"DEEPINFRA",
+    "MODEL":"meta-llama/Llama-3.3-70B-Instruct",
+    "MODEL_URL":"",
+    "EMBEDDING_MODEL":"BAAI/bge-m3",
+    "EMBEDDING_MODEL_URL":"",
+    "MONGODB_URL":"mongodb://localhost:27017"
+}

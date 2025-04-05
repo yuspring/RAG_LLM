@@ -1,0 +1,82 @@
+/* static/style.css */
+body {
+    font-family: sans-serif;
+    margin: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background-color: #f4f4f4;
+}
+.chat-container {
+    width: 80%;
+    max-width: 600px;
+    background-color: #fff;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    border-radius: 8px;
+    display: flex;
+    flex-direction: column;
+    height: 80vh; /* 限制高度 */
+}
+.chat-box {
+    flex-grow: 1; /* 佔滿剩餘空間 */
+    overflow-y: auto; /* 內容過多時顯示滾動條 */
+    padding: 20px;
+    border-bottom: 1px solid #eee;
+}
+.chat-message {
+    margin-bottom: 15px;
+    padding: 10px 15px;
+    border-radius: 18px;
+    max-width: 75%;
+    word-wrap: break-word; /* 長單字換行 */
+}
+.user-message {
+    background-color: #007bff;
+    color: white;
+    margin-left: auto; /* 靠右對齊 */
+    border-bottom-right-radius: 5px; /* 調整圓角 */
+}
+.bot-message {
+    background-color: #e9e9eb;
+    color: #333;
+    margin-right: auto; /* 靠左對齊 */
+    border-bottom-left-radius: 5px; /* 調整圓角 */
+}
+.bot-message strong {
+    display: block;
+    margin-bottom: 5px;
+    font-size: 0.9em;
+    color: #555;
+}
+.input-area {
+    display: flex;
+    padding: 15px;
+    border-top: 1px solid #eee; /* 加回上邊框 */
+}
+#user-input {
+    flex-grow: 1;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 20px;
+    margin-right: 10px;
+    outline: none;
+}
+#send-button {
+    padding: 10px 20px;
+    background-color: #28a745;
+    color: white;
+    border: none;
+    border-radius: 20px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+#send-button:hover {
+    background-color: #218838;
+}
+.loading-indicator {
+    text-align: center;
+    color: #888;
+    font-style: italic;
+    padding: 10px;
+}

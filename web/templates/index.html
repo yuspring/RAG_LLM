@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>簡單 LLM 聊天室</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="chat-container">
+        <div class="chat-box" id="chat-box">
+            <div class="chat-message bot-message">
+                <strong>LLM Bot</strong>
+                你好！輸入訊息開始對話吧。
+            </div>
+        </div>
+        <div class="input-area">
+            <input type="text" id="user-input" placeholder="在這裡輸入訊息..." autocomplete="off">
+            <button id="send-button">傳送</button>
+        </div>
+    </div>
+    <script src="{{ url_for('static', filename='script.js') }}" defer></script>
+</body>
+</html>
