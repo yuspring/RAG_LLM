@@ -3,7 +3,7 @@ from .LLM_config import LLM_config
 from langchain_core.documents import Document
 
 class DB_mongo:
-    def get_all_items():
+    def get_DBdata():
         config = LLM_config()
         client = pymongo.MongoClient(config.load("MONGODB_URL"))
         db = client.store

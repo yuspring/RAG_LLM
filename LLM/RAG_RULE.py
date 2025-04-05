@@ -1,7 +1,8 @@
+from LLM.DB_mongo import DB_mongo
+from LLM.LLM_router import LLM_router
+from prompt.prompt_template import prompt as pt
+
 import warnings
-import DB_mongo
-import LLM_router
-import prompt.prompt_template as pt
 from dotenv import load_dotenv
 from langchain_core.vectorstores import InMemoryVectorStore
 from langchain_core.documents import Document
@@ -15,7 +16,7 @@ class State(TypedDict):
     answer: str
 
 class RAG_Agent:
-    def __init__(self,VENDOR,MODEL,EMBEDDING_MODEL,URL=None):
+    def __init__(self,VENDOR,VENDOR_EMBEDDING,MODEL,EMBEDDING_MODEL,URL=None,ENBEDDING_URL=None):
         warnings.filterwarnings("ignore")
         load_dotenv()
 
@@ -25,10 +26,9 @@ class RAG_Agent:
         self.rag_rules = pt.STORE_RAG_RULES_CHINESE
 
         self.llm = LLM_router.chat_model(VENDOR,MODEL)
-        self.embeddings = LLM_router.embedding_model(VENDOR,EMBEDDING_MODEL)
+        self.embeddings = LLM_router.embedding_model(VENDOR_EMBEDDING,EMBEDDING_MODEL)
         self.vector_store = InMemoryVectorStore(self.embeddings)
-        self.vector_store.add_documents(documents=DB_mongo.get_all_items())
-        
+        self.vector_store.add_documents(documents=DB_mongo.get_DBdata())
         self.graph = self._build_graph()
     
     def _build_graph(self):
@@ -62,7 +62,3 @@ class RAG_Agent:
     def query(self, question):
         response = self.graph.invoke({"question": question})
         return response["answer"]
-    
-VENDOR="DEEPINFRA"
-MODEL="meta-llama/Llama-3.3-70B-Instruct"
-EMBEDDING_MODEL="BAAI/bge-m3"

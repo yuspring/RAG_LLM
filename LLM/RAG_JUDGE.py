@@ -1,10 +1,11 @@
+from LLM.DB_mongo import DB_mongo
+from LLM.LLM_router import LLM_router
+from prompt.prompt_template import prompt as pt
+
 import re
 import json
 import datetime
 import warnings
-import DB_mongo
-import LLM_router
-import prompt.prompt_template as pt
 from dotenv import load_dotenv
 from langchain_core.vectorstores import InMemoryVectorStore
 from langchain_core.documents import Document
@@ -21,15 +22,15 @@ class State(TypedDict):
     answer : str
 
 class RAG_Judge_Agent:
-    def __init__(self,VENDOR,MODEL,EMBEDDING_MODEL,URL=None):
+    def __init__(self,VENDOR,VENDOR_EMBEDDING,MODEL,EMBEDDING_MODEL,URL=None,ENBEDDING_URL=None):
         warnings.filterwarnings("ignore")
         load_dotenv()
 
         self.RETRIEVE_NUM=10
         self.llm = LLM_router.chat_model(VENDOR,MODEL)
-        self.embeddings = LLM_router.embedding_model(VENDOR,EMBEDDING_MODEL)
+        self.embeddings = LLM_router.embedding_model(VENDOR_EMBEDDING,EMBEDDING_MODEL)
         self.vector_store = InMemoryVectorStore(self.embeddings)
-        self.vector_store.add_documents(documents=DB_mongo.get_all_items())
+        self.vector_store.add_documents(documents=DB_mongo.get_DBdata())
 
         self.prompt_rag = PromptTemplate.from_template(pt.PROMPT_RULE_CHINESE)
         self.prompt_judge = PromptTemplate.from_template(pt.PROMPT_JUDGE_CHINESE)
@@ -96,15 +97,16 @@ class RAG_Judge_Agent:
         response = self.llm.invoke(messages)
         return {"judge_answer": response.content}
 
-    def _regex_tool(state: State):
+    def _regex_tool(self,state: State):
         print("---Regex Tool---")
+        print(state["judge_answer"])
         score = re.search(r"分數:\s*(\d+)", state["judge_answer"]).group(1)
         tag = re.search(r"標籤:\s*(.*)", state["judge_answer"]).group(1)
         context = re.search(r"簡述:\s*(.*)", state["judge_answer"]).group(1)
         judge_info = (int(score), tag, context)
         return {"judge_regex" : judge_info}
 
-    def _log_node(state: State):
+    def _log_node(self,state: State):
         print("---Log Node---")
         log = {
             "score": state["judge_regex"][0],
@@ -115,25 +117,21 @@ class RAG_Judge_Agent:
         with open(f"./log/{time}.json",'w',encoding='utf-8') as f:
             json.dump(log, f, indent=4)
 
-    def _score_condition(state: State):
+    def _score_condition(self,state: State):
         print("---Score condition---")
         if(state["judge_regex"][0] >= 3):
             return "answer"
         else:
             return "reject"
 
-    def _answer_node(state: State):
+    def _answer_node(self,state: State):
         print("---Answer Node---")
         return{"answer": state["rag_answer"]}
 
-    def _reject_node(state: State):
+    def _reject_node(self,state: State):
         print("---Reject Node---")
         return{"answer": "你的問題我無法回答"}
 
     def query(self, question):
         response = self.graph.invoke({"question": question})
         return response["answer"]
-
-VENDOR="DEEPINFRA"
-MODEL="meta-llama/Llama-3.3-70B-Instruct"
-EMBEDDING_MODEL="BAAI/bge-m3"
