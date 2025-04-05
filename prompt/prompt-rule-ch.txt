@@ -3,8 +3,8 @@
 在整個回答中扮演 PLAY_ROLE 中定義的角色
 最後的回覆必須嚴格遵守RULES的規則
 
-如果RAG_DATA沒有包含足夠的資訊來回答USER_RESPONSE，
-必須明確說明所提供的資訊不足，不要試著猜測或編造一個答案。
+如果RAG_DATA沒有包含足夠的資訊來回答USER_RESPONSE
+必須明確說明所提供的資訊不足，不要試著猜測或編造一個答案
 
 # Data Context
 1. PLAY_ROLE: 扮演的角色設定

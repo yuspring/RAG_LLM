@@ -1,4 +1,6 @@
 import warnings
+import DB_mongo
+import LLM_router
 from dotenv import load_dotenv
 from langchain_community.chat_models import ChatDeepInfra
 from langchain_community.embeddings import DeepInfraEmbeddings
@@ -8,174 +10,63 @@ from langgraph.graph import START, StateGraph, END
 from typing_extensions import List, TypedDict
 from langchain_core.prompts import PromptTemplate
 
-warnings.filterwarnings("ignore")
-load_dotenv()
-
-llm = ChatDeepInfra(model="meta-llama/Llama-3.3-70B-Instruct")
-embeddings = DeepInfraEmbeddings(model_id="BAAI/bge-m3")
-vector_store = InMemoryVectorStore(embeddings)
-
-
-# Item 1: 天然備長碳
-item_1 = Document(
-    page_content=
-    """ 
-    品項:天然備長碳\n
-    金額:250\n
-    數量:10\n
-    是否上架:是
-    """ 
-)
-
-# Item 2: 自然風隨心袋
-item_2 = Document(
-    page_content=
-    """ 
-    品項:自然風隨心袋\n
-    金額:200\n
-    數量:5\n
-    是否上架:是
-    """ 
-)
-
-# Item 3: 嫩嫩粉兩用杯
-item_3 = Document(
-    page_content=
-    """ 
-    品項:嫩嫩粉兩用杯\n    
-    金額:100\n
-    數量:3\n
-    是否上架:否
-    """ 
-)
-
-# Item 4: 湛霧灰兩用杯
-item_4 = Document(
-    page_content=
-    """ 
-    品項:湛霧灰兩用杯\n
-    金額:300\n
-    數量:5\n
-    是否上架:是
-    """ 
-)
-
-# Item 5: 暖暖橘馬克杯
-item_5 = Document(
-    page_content=
-    """ 
-    品項:暖暖橘馬克杯\n
-    金額:150\n
-    數量:3\n
-    是否上架:是
-    """ 
-)
-
-# Item 6: 霧黑色手沖壺
-item_6 = Document(
-    page_content=
-    """ 
-    品項:霧黑色手沖壺\n
-    金額:250\n
-    數量:1\n
-    是否上架:否
-    """ 
-)
-
-# Item 7: 霧黑色手沖壺
-item_7 = Document(
-    page_content=
-    """ 
-    品項:櫻花粉手沖壺\n
-    金額:100\n
-    數量:2\n
-    是否上架:否
-    """ 
-)
-
-# Item 8: 有機肉桂咖啡+
-item_8 = Document(
-    page_content=
-    """ 
-    品項:有機肉桂咖啡\n
-    金額:100\n
-    數量:30\n
-    是否上架:是
-    """ 
-)
-
-Item_list = [
-    item_1,
-    item_2,
-    item_3,
-    item_4,
-    item_5,
-    item_6,
-    item_7,
-    item_8,
-]
-
-vector_store.add_documents(documents=Item_list)
-
-prompt = PromptTemplate.from_template(
-"""
-    # Tasks 
-    你的主要任務是閱讀RAG_DATA，並嚴格且僅根據RAG_DATA來回答USER_RESPONSE
-    在整個回答中扮演 PLAY_ROLE 中定義的角色
-    最後的回覆必須嚴格遵守RULES的規則
-
-    如果RAG_DATA沒有包含足夠的資訊來回答USER_RESPONSE
-    必須明確說明所提供的資訊不足，不要試著猜測或編造一個答案
-
-    # Data Context
-    1. PLAY_ROLE: 扮演的角色設定
-    2. RAG_DATA: 產生答案的資訊來源
-    3. USER_RESPONSE: 使用者的回覆
-    4. RULES: 必須遵守的規則
-
-    # Input
-    PLAY_ROLE: <PLAY_ROLE> {PLAY_ROLE} </PLAY_ROLE>
-    RAG_DATA: <RAG_DATA> {RAG_DATA} </RAG_DATA>
-    USER_RESPONSE: <USER_RESPONSE> {USER_RESPONSE} </USER_RESPONSE>
-    RULES: <RULES> {RULES} </RULES>
-""")
-
 class State(TypedDict):
     question: str
     context: List[Document]
     answer: str
 
-def retrieve_node(state: State):
-    print("---RAG Retrieve---")
-    retrieved_docs = vector_store.similarity_search(state["question"], k=min(10,len(Item_list)))
-    return {"context": retrieved_docs}
+class RAG_Agent:
+    def __init__(self,VENDOR,MODEL,EMBEDDING_MODEL,URL=None):
+        warnings.filterwarnings("ignore")
+        load_dotenv()
+        self.llm = LLM_router.chat_model(VENDOR,MODEL)
+        self.embeddings = LLM_router.embedding_model(VENDOR,EMBEDDING_MODEL)
+        self.vector_store = InMemoryVectorStore(self.embeddings)
+        self.vector_store.add_documents(documents=DB_mongo.get_all_items())
+        self.retrieve_num = 10
+        with open("./prompt/prompt-rule-ch.txt", 'r', encoding='utf-8') as file:
+            self.prompt = PromptTemplate.from_template(file.read())
 
-def generate_node(state: State):
-    print("---RAG Generate---")
-    docs_content = "\n---\n".join(doc.page_content for doc in state["context"])
-    messages = prompt.invoke({
-        "PLAY_ROLE": "你是一名商店助手的LLM", 
-        "RAG_DATA": docs_content, 
-        "USER_RESPONSE": state["question"],
-        "RULES": """
-            1. 如果RAG_DATA中沒有足夠的資訊來回答USER_RESPONSE，請直接說明"無法從提供的資訊中找到答案"，不要嘗試編造\n
-            2. 禁止把未上架的商品告訴使用者\n
-            3. 禁止講述與商店無關的事情
-        """,
-    })
-    response = llm.invoke(messages)
-    return {"answer": response.content}
+        with open("./prompt/store-rag-role.txt", 'r', encoding='utf-8') as file:
+            self.rag_play_role = file.read()
 
-graph_builder = StateGraph(State)
+        with open("./prompt/store-rag-rules.txt", 'r', encoding='utf-8') as file:
+            self.rag_rules = file.read()
+        
+        self.graph = self._build_graph()
+    
+    def _build_graph(self):
+        graph_builder = StateGraph(State)
+        graph_builder.add_node("retrieve_node", self._retrieve_node)
+        graph_builder.add_node("generate_node", self._generate_node)
 
-graph_builder.add_node("retrieve_node", retrieve_node)
-graph_builder.add_node("generate_node", generate_node)
+        graph_builder.add_edge(START, "retrieve_node")
+        graph_builder.add_edge("retrieve_node", "generate_node")
+        graph_builder.add_edge("generate_node", END)
+        return graph_builder.compile()
+    
+    def _retrieve_node(self,state: State):
+        print("---RAG Retrieve---")
+        retrieved_docs = self.vector_store.similarity_search(state["question"], k=self.retrieve_num)
+        return {"context": retrieved_docs}
 
-graph_builder.add_edge(START, "retrieve_node")
-graph_builder.add_edge("retrieve_node", "generate_node")
-graph_builder.add_edge("generate_node", END)
-graph = graph_builder.compile()
-
-user_input = str(input("User Input:"))
-response = graph.invoke({"question": user_input})
-print(response["answer"])
+    def _generate_node(self,state: State):
+        print("---RAG Generate---")
+        docs_content = "\n---\n".join(doc.page_content for doc in state["context"])
+        input_data = {
+            "PLAY_ROLE": self.rag_play_role, 
+            "RAG_DATA": docs_content, 
+            "USER_RESPONSE": state["question"],
+            "RULES": self.rag_rules,
+        }
+        messages = self.prompt.invoke(input_data)
+        response = self.llm.invoke(messages) 
+        return {"answer": response.content}
+    
+    def query(self, question):
+        response = self.graph.invoke({"question": question})
+        return response["answer"]
+    
+VENDOR="DEEPINFRA"
+MODEL="meta-llama/Llama-3.3-70B-Instruct"
+EMBEDDING_MODEL="BAAI/bge-m3"

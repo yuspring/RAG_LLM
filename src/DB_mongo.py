@@ -1,13 +1,19 @@
 import pymongo
+from langchain_core.documents import Document
 
-client = pymongo.MongoClient('mongodb://localhost:27017/')
+def get_all_items():
+    client = pymongo.MongoClient('mongodb://localhost:27017')
+    db = client.store
+    collection = db.item
 
-db = client['store']
-collection = db['item']
+    db_item = collection.find() 
+    Item_list = []
 
-print(f"選擇了資料庫: {db.name}")
-print(f"選擇了集合: {collection.name}")
-
-document1 = {"test": 123}
-
-insert_result = collection.insert_one(document1)
+    for item in db_item:
+        context = ""
+        for key, value in item.items():
+            if key == "_id":
+                continue
+            context += f"{key}:{str(value)}\n"
+        Item_list.append(Document(page_content=context))
+    return Item_list

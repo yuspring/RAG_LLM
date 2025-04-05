@@ -11,3 +11,4 @@ wheels/
 
 .env
 log/
+DB_chroma/
