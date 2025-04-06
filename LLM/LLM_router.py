@@ -1,6 +1,7 @@
 from langchain_community.chat_models import ChatDeepInfra, ChatOllama
 from langchain_community.embeddings import DeepInfraEmbeddings, OllamaEmbeddings
 from langchain_openai import ChatOpenAI, OpenAIEmbeddings
+
 class LLM_router:
     def chat_model(NAME,MODEL,URL=None):
         if(NAME=='OPENAI'):

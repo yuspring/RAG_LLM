@@ -1,11 +1,11 @@
-from LLM.DB_mongo import DB_mongo
-from LLM.LLM_router import LLM_router
-from prompt.prompt_template import prompt as pt
-
 import re
 import json
 import datetime
 import warnings
+
+from LLM.DB_mongo import DB_mongo
+from LLM.LLM_router import LLM_router
+from prompt.prompt_template import prompt as pt
 from dotenv import load_dotenv
 from langchain_core.vectorstores import InMemoryVectorStore
 from langchain_core.documents import Document
@@ -69,6 +69,7 @@ class RAG_Judge_Agent:
         graph_builder.add_edge("answer_node", END)
         graph_builder.add_edge("reject_node", END)
         return graph_builder.compile()
+    
     def _rag_retrieve_node(self,state: State):
         print("---RAG Retrieve---")
         retrieved_docs = self.vector_store.similarity_search(state["question"], k=self.RETRIEVE_NUM)
@@ -99,7 +100,6 @@ class RAG_Judge_Agent:
 
     def _regex_tool(self,state: State):
         print("---Regex Tool---")
-        print(state["judge_answer"])
         score = re.search(r"分數:\s*(\d+)", state["judge_answer"]).group(1)
         tag = re.search(r"標籤:\s*(.*)", state["judge_answer"]).group(1)
         context = re.search(r"簡述:\s*(.*)", state["judge_answer"]).group(1)
@@ -109,13 +109,14 @@ class RAG_Judge_Agent:
     def _log_node(self,state: State):
         print("---Log Node---")
         log = {
-            "score": state["judge_regex"][0],
-            "tag": state["judge_regex"][1],
-            "context": state["judge_regex"][2],
+            "question": state["question"],
+            "score": int(state["judge_regex"][0]),
+            "tag": str(state["judge_regex"][1]),
+            "context": str(state["judge_regex"][2]),
         }
-        time = datetime.datetime.now().strftime("%Y-%m-%d-%H:%M:%S")
+        time = datetime.datetime.now().strftime("%Y-%m-%d-%H-%M-%S")
         with open(f"./log/{time}.json",'w',encoding='utf-8') as f:
-            json.dump(log, f, indent=4)
+            json.dump(log, f, indent=4, ensure_ascii=False)
 
     def _score_condition(self,state: State):
         print("---Score condition---")
@@ -130,7 +131,8 @@ class RAG_Judge_Agent:
 
     def _reject_node(self,state: State):
         print("---Reject Node---")
-        return{"answer": "你的問題我無法回答"}
+        state['answer'] = "你的問題我無法回答"
+        return{"answer": state['answer']}
 
     def query(self, question):
         response = self.graph.invoke({"question": question})
