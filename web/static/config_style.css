@@ -1,0 +1,145 @@
+/* static/config_style.css */
+body {
+    font-family: "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    margin: 0;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start; /* Align to top to see content easily */
+    min-height: 100vh;
+    background-color: #f0f2f5; /* Slightly different background */
+    padding-top: 40px; /* Add some padding at the top */
+    padding-bottom: 40px;
+}
+
+.config-container {
+    width: 90%;
+    max-width: 700px; /* Wider for forms */
+    background-color: #fff;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    border-radius: 8px;
+    padding: 30px 40px; /* More padding */
+}
+
+h1 {
+    text-align: center;
+    color: #333;
+    margin-bottom: 30px;
+    font-weight: 600;
+}
+
+/* Form element styling */
+.form-group {
+    margin-bottom: 20px;
+}
+
+label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 600; /* Bolder labels */
+    color: #555;
+    font-size: 0.95em;
+}
+
+input[type="text"],
+input[type="url"],
+input[type="password"] {
+    width: 100%;
+    padding: 12px 15px; /* Larger padding */
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    box-sizing: border-box; /* Include padding/border in width */
+    font-size: 1em;
+    transition: border-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+}
+
+input[type="text"]:focus,
+input[type="url"]:focus,
+input[type="password"]:focus {
+    border-color: #007bff;
+    box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.2);
+    outline: none;
+}
+
+.form-actions {
+    margin-top: 30px;
+    text-align: center; /* Center the button */
+}
+
+.submit-button {
+    padding: 12px 30px; /* Larger button */
+    background-color: #007bff; /* Blue primary button */
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 1.05em;
+    font-weight: 500;
+    transition: background-color 0.2s, transform 0.1s;
+}
+
+.submit-button:hover {
+    background-color: #0056b3; /* Darker blue on hover */
+    transform: translateY(-1px); /* Slight lift effect */
+}
+
+.submit-button:active {
+    transform: translateY(0px); /* Button press effect */
+}
+
+/* Flash Messages Styling */
+.flash-message {
+    padding: 15px;
+    margin-bottom: 20px;
+    border: 1px solid transparent;
+    border-radius: 4px;
+    text-align: center;
+    font-weight: 500;
+}
+
+.flash-message.success { /* Assuming category 'success' */
+    color: #155724;
+    background-color: #d4edda;
+    border-color: #c3e6cb;
+}
+
+.flash-message.error { /* Assuming category 'error' */
+    color: #721c24;
+    background-color: #f8d7da;
+    border-color: #f5c6cb;
+}
+
+.flash-message.warning { /* Assuming category 'warning' */
+    color: #856404;
+    background-color: #fff3cd;
+    border-color: #ffeeba;
+}
+
+.flash-message.info { /* Assuming category 'info' */
+    color: #0c5460;
+    background-color: #d1ecf1;
+    border-color: #bee5eb;
+}
+
+/* Error message if config fails to load */
+.error-message {
+    color: #dc3545;
+    text-align: center;
+    font-weight: bold;
+}
+
+/* Back link styling */
+.back-link {
+    text-align: center;
+    margin-top: 25px;
+}
+
+.back-link a {
+    color: #007bff;
+    text-decoration: none;
+    transition: color 0.2s;
+}
+
+.back-link a:hover {
+    color: #0056b3;
+    text-decoration: underline;
+}

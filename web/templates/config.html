@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LLM 設定</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='config_style.css') }}">
+</head>
+<body>
+    <div class="config-container">
+        <h1>LLM 服務設定</h1>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+          {% if messages %}
+            {% for category, message in messages %}
+              <div class="flash-message {{ category }}">{{ message }}</div>
+            {% endfor %}
+          {% endif %}
+        {% endwith %}
+
+        <form method="POST" action="{{ url_for('update_config') }}"> {# Make sure 'update_config' matches your Flask route name #}
+            {% if config_data %}
+                {% for key, value in config_data.items() %}
+                <div class="form-group">
+                    <label for="{{ key }}">{{ key }}:</label>
+                    {# Use different input types based on key name or expected value type #}
+                    {% if 'URL' in key or 'URI' in key %}
+                        <input type="url" id="{{ key }}" name="{{ key }}" value="{{ value }}" autocomplete="off">
+                    {% elif 'PASSWORD' in key or 'SECRET' in key %}
+                         <input type="password" id="{{ key }}" name="{{ key }}" value="{{ value }}" autocomplete="new-password">
+                    {% else %}
+                        <input type="text" id="{{ key }}" name="{{ key }}" value="{{ value }}" autocomplete="off">
+                    {% endif %}
+                </div>
+                {% endfor %}
+                 <div class="form-actions">
+                    <button type="submit" class="submit-button">儲存設定</button>
+                 </div>
+            {% else %}
+                <p class="error-message">無法載入設定資料。</p>
+            {% endif %}
+        </form>
+         <div class="back-link">
+             <a href="{{ url_for('index') }}">返回聊天室</a> {# Assumes your chatbot index route is named 'index' #}
+         </div>
+    </div>
+    </body>
+</html>
