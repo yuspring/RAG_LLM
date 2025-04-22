@@ -3,9 +3,6 @@ sys.path.insert(0,'.')
 from flask import Flask, render_template, request, jsonify, redirect,url_for
 import LLM.RAG_JUDGE
 from LLM.LLM_config import LLM_config
-script_directory = os.path.dirname(os.path.abspath(__file__))
-libs_path = os.path.join(script_directory, 'LLM')
-sys.path.append(libs_path) 
 
 def get_llm_response(user_message):
 
