@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LLM防衛系統 紀錄Log</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='log_style.css') }}">
+</head>
+<body>
+    <div class="main-container">
+
+        <h1>LLM防衛系統 紀錄Log</h1>
+
+        {% if data_list %}
+            {% for item in data_list %}
+            <div class="data-card">
+
+
+                <div class="data-item">
+                    <span class="label">問題:</span>
+                    <span class="content-value">{{ item.question }}</span>
+                </div>
+                <div class="data-item">
+                    <span class="label">分數:</span>
+                    <span class="score-value" style="color: {{ item.text_color }}">
+                        {{ item.score }}
+                    </span>
+                </div>
+                <div class="data-item">
+                    <span class="label">標籤:</span>
+                    <span class="tag-value tag-{{ item.text_color }}">{{ item.tag }}</span>
+                </div>
+                <div class="data-item">
+                    <span class="label">內容:</span>
+                    <span class="content-value">{{ item.context }}</span>
+                </div>
+            </div>
+            {% endfor %}
+        {% else %}
+            <p class="no-data">在指定目錄中沒有找到 JSON 檔案，或者所有檔案處理都成功但結果為空。</p>
+        {% endif %}
+
+    </div>
+
+</body>
+</html>

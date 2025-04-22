@@ -1,6 +1,10 @@
 /* static/style.css */
 body {
-    font-family: sans-serif;
+    font-family: "Noto Sans CJK TC", "Microsoft JhengHei", /* 微軟正黑體 (Windows) */
+    "PingFang TC", /* 蘋方-繁 (macOS/iOS) */
+    system-ui, -apple-system, BlinkMacSystemFont, /* 系統預設 UI 字體 */
+    "Segoe UI", Roboto, "Helvetica Neue", Arial, /* 常見西文字體 */
+    sans-serif; /* 最後的通用無襯線字體 */
     margin: 0;
     display: flex;
     justify-content: center;

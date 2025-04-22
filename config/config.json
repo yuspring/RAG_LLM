@@ -1,9 +1,9 @@
 {
-    "VENDOR":"OPENAI",
-    "MODEL":"gpt-4o",
-    "MODEL_URL":"",
-    "VENDOR_EMBEDDING_MODEL":"OPENAI",
-    "EMBEDDING_MODEL":"text-embedding-3-large",
-    "EMBEDDING_MODEL_URL":"",
-    "MONGODB_URL":"mongodb://localhost:27017"
+    "VENDOR": "OPENAI",
+    "MODEL": "gpt-4o",
+    "MODEL_URL": "",
+    "VENDOR_EMBEDDING_MODEL": "OPENAI",
+    "EMBEDDING_MODEL": "text-embedding-3-large",
+    "EMBEDDING_MODEL_URL": "",
+    "MONGODB_URL": "mongodb://localhost:27017"
 }

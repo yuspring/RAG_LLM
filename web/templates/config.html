@@ -3,46 +3,37 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LLM 設定</title>
+    <title>系統設定</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='config_style.css') }}">
 </head>
 <body>
-    <div class="config-container">
-        <h1>LLM 服務設定</h1>
+    <div class="config-form">
+        <h1>系統設定</h1>
+        <form method="POST" action="{{ url_for('handle_config') }}">
+            {% set key_to_label = {
+                'VENDOR': 'LLM 供應商',
+                'MODEL': 'LLM 模型',
+                'MODEL_URL': '模型網址',
+                'VENDOR_EMBEDDING_MODEL': '嵌入模型供應商',
+                'EMBEDDING_MODEL': '嵌入模型',
+                'EMBEDDING_MODEL_URL': '嵌入模型網址',
+                'MONGODB_URL': '資料庫網址',
+            } %}
 
-        {% with messages = get_flashed_messages(with_categories=true) %}
-          {% if messages %}
-            {% for category, message in messages %}
-              <div class="flash-message {{ category }}">{{ message }}</div>
+            {% for key, value in config_data.items() %}
+            <div class="form-group">
+                {# 使用上面定義的 key_to_label 字典 #}
+                <label for="{{ key }}">{{ key_to_label.get(key, key) }}:</label>
+                {# input 的 id 和 name 保持不變 #}
+                <input type="text" id="{{ key }}" name="{{ key }}" value="{{ value }}">
+            </div>
             {% endfor %}
-          {% endif %}
-        {% endwith %}
+            <div class="form-group">
+                <button type="submit">儲存設定</button>
+            </div>
 
-        <form method="POST" action="{{ url_for('update_config') }}"> {# Make sure 'update_config' matches your Flask route name #}
-            {% if config_data %}
-                {% for key, value in config_data.items() %}
-                <div class="form-group">
-                    <label for="{{ key }}">{{ key }}:</label>
-                    {# Use different input types based on key name or expected value type #}
-                    {% if 'URL' in key or 'URI' in key %}
-                        <input type="url" id="{{ key }}" name="{{ key }}" value="{{ value }}" autocomplete="off">
-                    {% elif 'PASSWORD' in key or 'SECRET' in key %}
-                         <input type="password" id="{{ key }}" name="{{ key }}" value="{{ value }}" autocomplete="new-password">
-                    {% else %}
-                        <input type="text" id="{{ key }}" name="{{ key }}" value="{{ value }}" autocomplete="off">
-                    {% endif %}
-                </div>
-                {% endfor %}
-                 <div class="form-actions">
-                    <button type="submit" class="submit-button">儲存設定</button>
-                 </div>
-            {% else %}
-                <p class="error-message">無法載入設定資料。</p>
-            {% endif %}
         </form>
-         <div class="back-link">
-             <a href="{{ url_for('index') }}">返回聊天室</a> {# Assumes your chatbot index route is named 'index' #}
-         </div>
     </div>
-    </body>
+
+</body>
 </html>

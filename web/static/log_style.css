@@ -1,0 +1,121 @@
+/* data-display.css */
+/* Styles adapted to match the chat interface theme */
+
+/* Assume body background is set globally, e.g., body { background-color: #f8f9fa; } */
+body {
+    /* These styles might be in a global stylesheet */
+    font-family: "Noto Sans CJK TC", "Microsoft JhengHei", /* 微軟正黑體 (Windows) */
+    "PingFang TC", /* 蘋方-繁 (macOS/iOS) */
+    system-ui, -apple-system, BlinkMacSystemFont, /* 系統預設 UI 字體 */
+    "Segoe UI", Roboto, "Helvetica Neue", Arial, /* 常見西文字體 */
+    sans-serif; /* 最後的通用無襯線字體 */
+    line-height: 1.6;
+    padding: 20px;
+    background-color: #f8f9fa; /* Using light grey background like the chat theme implies */
+    color: #333; /* Default text color */
+    margin: 0;
+}
+
+.main-container {
+    max-width: 1140px;
+    margin-left: auto;
+    margin-right: auto;
+    padding-left: 15px;
+    padding-right: 15px;
+}
+
+h1 {
+    text-align: center;
+    color: #333; /* 主要標題顏色 */
+    margin-bottom: 2rem; /* 增加底部間距 */
+    font-weight: 600; /* 加粗標題 */
+}
+
+
+.data-card {
+    border: 1px solid #eee; /* 更細緻的邊框 */
+    padding: 1.5rem; /* 調整 padding */
+    border-radius: 8px; /* 更大的圓角 */
+    background-color: #ffffff; /* 白色背景 */
+    margin-bottom: 1.5rem; /* 增加卡片間距 */
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.075); /* 稍微柔和的陰影 */
+}
+
+.data-item {
+    margin-bottom: 1rem;
+    padding-bottom: 1rem;
+    display: flex;
+    align-items: flex-start;
+    border-bottom: 1px solid #f0f0f0; /* 非常淺的分隔線 */
+}
+
+.data-item:last-child {
+    border-bottom: none;
+    margin-bottom: 0;
+    padding-bottom: 0;
+}
+
+.label {
+    font-weight: 600;
+    display: inline-block;
+    width: 100px; /* 可以稍微加寬 */
+    color: #555; /* 次要文字顏色 */
+    flex-shrink: 0;
+    margin-right: 15px; /* 增加標籤和內容間距 */
+}
+
+.content-value {
+    flex-grow: 1;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    white-space: pre-wrap;
+    color: #333; /* 主要內容文字顏色 */
+}
+
+.score-value {
+    font-weight: 700;
+    /* Color is set inline via HTML style attribute */
+}
+
+.source-file {
+    font-size: 0.875em;
+    color: #888; /* 使用更淺的灰色，類似聊天提示文字 */
+    font-style: italic;
+    margin-top: 0.25rem; /* 增加一點上方間距 */
+    display: block; /* 使其獨占一行 */
+}
+
+.no-data {
+    text-align: center;
+    color: #888; /* 使用淺灰色提示文字 */
+    margin-top: 2rem;
+    font-size: 1.1rem;
+    padding: 2rem;
+    background-color: #fff; /* 可選：給提示一個背景 */
+    border: 1px dashed #eee; /* 可選：給提示一個虛線邊框 */
+    border-radius: 8px;
+}
+
+.tag-value {
+    display: inline-block;
+    padding: 0.3em 0.7em; /* 調整 padding */
+    font-size: 0.8em; /* 調整字體大小 */
+    font-weight: 600;
+    line-height: 1.2;
+    color: #fff;
+    text-align: center;
+    white-space: nowrap;
+    vertical-align: baseline;
+    border-radius: 4px; /* 輕微圓角 */
+    margin-right: 0.3rem; /* 標籤間距 */
+    margin-bottom: 0.3rem; /* 標籤換行間距 */
+}
+
+/* Keep meaningful colors, maybe update the default/grey one */
+.tag-value { background-color: #6c757d; } /* Default Grey */
+.tag-value.tag-grey { background-color: #adb5bd; } /* Lighter Grey */
+.tag-value.tag-red { background-color: #dc3545; }
+.tag-value.tag-orange { background-color: #fd7e14; }
+.tag-value.tag-green { background-color: #28a745; } /* Matches button green */
+.tag-value.tag-black { background-color: #343a40; }
+.tag-value.tag-purple { background-color: #6f42c1; }
