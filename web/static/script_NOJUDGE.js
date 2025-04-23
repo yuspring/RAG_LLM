@@ -10,7 +10,7 @@ function addMessage(message, sender) {
         messageDiv.textContent = message; 
     } else {
         messageDiv.classList.add('bot-message');
-        messageDiv.innerHTML = `<strong>LLM (有防衛系統)</strong>${message}`;
+        messageDiv.innerHTML = `<strong>LLM (沒有防衛系統)</strong>${message}`;
     }
     chatBox.appendChild(messageDiv);
     chatBox.scrollTop = chatBox.scrollHeight;
@@ -43,7 +43,7 @@ async function sendMessage() {
     showLoading(); 
 
     try {
-        const response = await fetch('/ask', {
+        const response = await fetch('/asknojudge', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',

@@ -6,6 +6,7 @@ from flask import Flask, render_template, request, jsonify, redirect,url_for
 
 sys.path.insert(0,'.')
 import LLM.RAG_JUDGE
+import LLM.RAG_NORULE
 from LLM.LLM_config import LLM_config
 
 app = Flask(__name__)
@@ -29,10 +30,22 @@ def get_llm_response(user_message):
     print(f"LLM 回應: {response}")
     return response
 
+def get_llm_response_nojudge(user_message):
+
+    print(f"收到的訊息: {user_message}")
+    response = nojudge_agent.query(user_message)
+    print(f"LLM 回應: {response}")
+    return response
+
 
 @app.route("/")
 def index():
     return render_template("index.html")
+
+@app.route("/nojudge")
+def nojudge():
+    return render_template("index_NOJUDGE.html")
+
 
 @app.route("/ask", methods=["POST"])
 def ask():
@@ -42,6 +55,17 @@ def ask():
         return jsonify({"error": "沒有收到訊息"}), 400
 
     bot_response = get_llm_response(user_message)
+    return jsonify({"response": bot_response})
+
+
+@app.route("/asknojudge", methods=["POST"])
+def asknojudge():
+    user_message = request.json.get("message")
+
+    if not user_message:
+        return jsonify({"error": "沒有收到訊息"}), 400
+
+    bot_response = get_llm_response_nojudge(user_message)
     return jsonify({"response": bot_response})
 
 @app.route('/log')
@@ -85,5 +109,6 @@ if __name__ == "__main__":
     EMBEDDING_MODEL = config_manager.load("EMBEDDING_MODEL")
     VENDOR_EMBEDDING_MODEL = config_manager.load("VENDOR_EMBEDDING_MODEL")
     judge_agent = LLM.RAG_JUDGE.RAG_Judge_Agent(VENDOR,VENDOR_EMBEDDING_MODEL,MODEL,EMBEDDING_MODEL)
+    nojudge_agent = LLM.RAG_NORULE.RAG_Agent(VENDOR,VENDOR_EMBEDDING_MODEL,MODEL,EMBEDDING_MODEL)
     app.run(debug=True, port=8000)
     

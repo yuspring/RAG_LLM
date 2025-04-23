@@ -1,7 +1,7 @@
 [project]
 name = "RAG_LLM_Security"
 version = "0.0.1"
-description = "It is a LLM project."
+description = "Use multi agent to protect prompt injection"
 requires-python = ">=3.11"
 dependencies = [
     "flask>=3.1.0",
